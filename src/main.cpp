@@ -91,6 +91,7 @@ void setActiveNotes(int index) {
 // -----------------------------------
 // SET OCTAVE
 // -----------------------------------
+// OCTAVE will equal a number between 0 - 4, which we then us as an index to access the OCTAVE_VALUES array
 
 void setOctave(int button) {
   if (button == OCTAVE_UP_PIN) {
@@ -112,7 +113,6 @@ void setOctave(int button) {
 
 void setup() {
   Serial.begin(9600);
-
   // Connect MPR121 touch sensors @ I2C address 0x5A (default)
   if (!cap.begin(0x5A)) {
     Serial.println("MPR121 not found, check wiring?");
@@ -161,11 +161,17 @@ void loop() {
     if (i == 2 || i == 4 || i == 5 || i == 6) {
       uint8_t state = digitalRead(switchPins[i]);
       bitWrite(newSwitchStates, i, state);
+    } else {
+      uint8_t state = HIGH;
+      bitWrite(newSwitchStates, i, state);
     }
   }
 
   if ( newSwitchStates != oldSwitchStates ) {
     oldSwitchStates = newSwitchStates;
+    if (DEBUG == true) {
+      Serial.println(oldSwitchStates, BIN);
+    }
     setVoltageOut(lastTouchedIndex);
   }
 
